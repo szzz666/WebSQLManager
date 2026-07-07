@@ -1,0 +1,369 @@
+/* WebSQLManager 自定义样式 */
+
+:root {
+    --wsm-primary: #409eff;
+    --wsm-success: #67c23a;
+    --wsm-warning: #e6a23c;
+    --wsm-danger: #f56c6c;
+    --wsm-bg: #f5f7fa;
+    --wsm-border: #e4e7ed;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--wsm-bg);
+}
+
+#app {
+    height: 100vh;
+}
+
+/* 登录页样式 */
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.login-card {
+    width: 400px;
+    max-width: 90vw;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.login-card .login-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: #303133;
+    margin-bottom: 8px;
+}
+
+.login-card .login-subtitle {
+    text-align: center;
+    font-size: 14px;
+    color: #909399;
+    margin-bottom: 30px;
+}
+
+/* 主布局 */
+.app-layout {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-header {
+    background: #fff;
+    border-bottom: 1px solid var(--wsm-border);
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    flex-shrink: 0;
+    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+}
+
+.app-header .logo {
+    font-size: 18px;
+    font-weight: 700;
+    color: #303133;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.app-body {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+/* 侧边栏 */
+.app-sidebar {
+    width: 260px;
+    background: #fff;
+    border-right: 1px solid var(--wsm-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: width 0.3s;
+}
+
+.app-sidebar.collapsed {
+    width: 64px;
+}
+
+.sidebar-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--wsm-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    color: #606266;
+    font-size: 14px;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+}
+
+.nav-item:hover {
+    background: #f5f7fa;
+    color: var(--wsm-primary);
+}
+
+.nav-item.active {
+    background: #ecf5ff;
+    color: var(--wsm-primary);
+    border-left-color: var(--wsm-primary);
+    font-weight: 600;
+}
+
+.nav-item .el-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.sidebar-footer {
+    padding: 10px 16px;
+    border-top: 1px solid var(--wsm-border);
+    font-size: 12px;
+    color: #909399;
+    flex-shrink: 0;
+}
+
+/* 主内容区 */
+.app-main {
+    flex: 1;
+    overflow: auto;
+    padding: 16px;
+    background: var(--wsm-bg);
+}
+
+/* 连接卡片 */
+.connection-card {
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.connection-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.connection-card.active {
+    border-color: var(--wsm-primary);
+    box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+}
+
+/* 数据表格 */
+.data-table-wrapper {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.data-table-wrapper .el-table {
+    font-size: 13px;
+}
+
+/* SQL 编辑器 */
+.sql-editor-container {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.CodeMirror {
+    flex: 1;
+    height: auto !important;
+    min-height: 200px;
+    font-size: 14px;
+}
+
+.CodeMirror-hints {
+    z-index: 9999;
+}
+
+/* 查询结果 */
+.query-result {
+    margin-top: 12px;
+}
+
+.query-result-meta {
+    padding: 8px 12px;
+    background: #f5f7fa;
+    border-radius: 4px 4px 0 0;
+    font-size: 13px;
+    color: #606266;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+/* 表结构视图 */
+.structure-view .column-row {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--wsm-border);
+    gap: 12px;
+    font-size: 13px;
+}
+
+.structure-view .column-row:hover {
+    background: #f5f7fa;
+}
+
+.type-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.type-badge.int { background: #f0f9eb; color: #67c23a; }
+.type-badge.varchar { background: #ecf5ff; color: #409eff; }
+.type-badge.text { background: #fdf6ec; color: #e6a23c; }
+.type-badge.datetime { background: #fef0f0; color: #f56c6c; }
+.type-badge.primary { background: #f0f9eb; color: #67c23a; font-weight: 700; }
+
+/* 工具栏 */
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.toolbar .spacer {
+    flex: 1;
+}
+
+/* 空状态 */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: #909399;
+    text-align: center;
+}
+
+.empty-state .empty-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .app-sidebar {
+        position: fixed;
+        z-index: 100;
+        height: 100%;
+        transform: translateX(-100%);
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .app-sidebar.mobile-open {
+        transform: translateX(0);
+    }
+
+    .app-main {
+        padding: 10px;
+    }
+
+    .login-card {
+        padding: 24px;
+    }
+
+    .toolbar {
+        gap: 4px;
+    }
+
+    .nav-item span:not(.el-icon) {
+        white-space: nowrap;
+    }
+}
+
+/* 遮罩层（移动端侧边栏） */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 99;
+}
+
+.sidebar-overlay.show {
+    display: block;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* JSON 美化显示 */
+.json-viewer {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 12px;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    overflow: auto;
+    max-height: 400px;
+}
