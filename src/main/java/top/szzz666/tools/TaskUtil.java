@@ -75,7 +75,7 @@ public class TaskUtil {
     }
 
     private static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor(r -> {
-        Thread thread = new Thread(r, "KokonaSchedulerThread");
+        Thread thread = new Thread(r, "TaskThread");
         thread.setDaemon(false);
         return thread;
     });

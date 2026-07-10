@@ -243,7 +243,13 @@ const DataBrowser = {
             }
             if (tableInfo.value && tableInfo.value.columns) {
                 tableInfo.value.columns.forEach(col => {
-                    recordForm[col.name] = col.defaultValue || '';
+                    // SQL 表达式类默认值不预填，让数据库自行处理
+                    const dv = col.defaultValue || '';
+                    const dvUpper = dv.toUpperCase().trim();
+                    const isSqlExpr = ['CURRENT_TIMESTAMP', 'CURRENT_DATE', 'CURRENT_TIME',
+                        'NOW()', 'NULL', 'UUID()', 'RAND()'].some(e => dvUpper === e || dvUpper.startsWith(e + '('))
+                        || dvUpper.startsWith('CURRENT_TIMESTAMP');
+                    recordForm[col.name] = isSqlExpr ? '' : dv;
                 });
             }
             formVisible.value = true;

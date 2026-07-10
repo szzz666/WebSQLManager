@@ -3,6 +3,7 @@ package top.szzz666.web;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.szzz666.database.ConnectionManager;
+import top.szzz666.model.ApiResponse;
 import top.szzz666.service.ConnectionService;
 import top.szzz666.service.DataService;
 import top.szzz666.service.SqlService;
@@ -11,6 +12,8 @@ import top.szzz666.tools.JsonUtil;
 import top.szzz666.tools.TaskUtil;
 import top.szzz666.web.controller.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static top.szzz666.config.MyConfig.*;
@@ -168,13 +171,13 @@ public class WebServer {
         get("/api/auth/status", (req, res) -> {
             String token = req.headers("X-Auth-Token");
             boolean loggedIn = !authEnabled || SessionManager.validate(token);
-            java.util.Map<String, Object> data = new java.util.HashMap<>();
+            Map<String, Object> data = new HashMap<>();
             data.put("loggedIn", loggedIn);
             data.put("authEnabled", authEnabled);
             if (loggedIn && authEnabled) {
                 data.put("username", SessionManager.getUsername(token));
             }
-            return JsonUtil.toCompactJson(top.szzz666.model.ApiResponse.success(data));
+            return JsonUtil.toCompactJson(ApiResponse.success(data));
         });
     }
 }
