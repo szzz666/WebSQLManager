@@ -34,7 +34,7 @@ public class Main {
         logger.info("========================================");
         logger.info("  WebSQLManager 启动成功！");
         logger.info("  访问地址: http://localhost:{}", top.szzz666.config.MyConfig.serverPort);
-        logger.info("  默认账号: {} / {}", MyConfig.authUsername, top.szzz666.config.MyConfig.authPassword);
+        logger.info("  默认账号: admin / admin123");
         logger.info("========================================");
 
         // 4. 等待关闭命令
