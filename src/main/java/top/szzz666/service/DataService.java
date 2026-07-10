@@ -79,7 +79,7 @@ public class DataService {
             while (rs.next()) {
                 Map<String, Object> row = new LinkedHashMap<>();
                 for (int i = 1; i <= colCount; i++) {
-                    row.put(columns.get(i - 1), rs.getObject(i));
+                    row.put(columns.get(i - 1), SqlService.safeGetObject(rs, i));
                 }
                 rows.add(row);
             }

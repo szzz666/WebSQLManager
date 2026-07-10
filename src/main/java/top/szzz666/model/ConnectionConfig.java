@@ -48,8 +48,12 @@ public class ConnectionConfig {
         if (jdbcUrl == null) return "unknown";
         String lower = jdbcUrl.toLowerCase();
         if (lower.startsWith("jdbc:sqlite:") || lower.startsWith("sqlite:")) return "sqlite";
-        if (lower.startsWith("jdbc:mysql:") || lower.startsWith("mysql:")) return "mysql";
-        if (lower.startsWith("jdbc:mariadb:")) return "mysql";
+        if (lower.startsWith("jdbc:mysql:")) return "mysql";
+        if (lower.startsWith("jdbc:mariadb:")) return "mariadb";
+        if (lower.startsWith("jdbc:postgresql:")) return "postgresql";
+        if (lower.startsWith("jdbc:sqlserver:")) return "mssql";
+        if (lower.startsWith("jdbc:oracle:")) return "oracle";
+        if (lower.startsWith("jdbc:h2:")) return "h2";
         return "unknown";
     }
 

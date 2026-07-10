@@ -1,5 +1,5 @@
 /**
- * SQL 查询编辑器组件
+ * SQL 命令执行组件
  * 使用 CodeMirror 提供语法高亮和自动补全
  */
 const SqlEditor = {
@@ -7,7 +7,7 @@ const SqlEditor = {
     template: `
     <div class="sql-editor">
         <div class="toolbar">
-            <h2 style="margin:0;font-size:20px;color:#303133;">SQL 查询</h2>
+            <h2 style="margin:0;font-size:20px;color:#303133;">SQL 命令执行</h2>
             <div class="spacer"></div>
             <el-tooltip content="Ctrl+Enter 执行">
                 <el-button type="primary" :icon="VideoPlay" @click="execute" :loading="executing" :disabled="!connId">执行</el-button>

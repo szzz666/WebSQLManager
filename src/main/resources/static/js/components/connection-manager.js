@@ -26,6 +26,9 @@ const ConnectionManager = {
                                     <component :is="typeIcon(conn.type)"/>
                                 </el-icon>
                                 <span style="font-weight:600;font-size:15px;">{{ conn.name }}</span>
+                                <el-tooltip :content="statusMap[conn.id]?.active ? '已连接' : '未连接'" placement="top">
+                                    <span :style="{display:'inline-block',width:'8px',height:'8px',borderRadius:'50%',background:statusMap[conn.id]?.active ? '#67c23a' : '#c0c4cc'}"></span>
+                                </el-tooltip>
                             </div>
                             <el-dropdown trigger="click" @command="cmd => handleCommand(cmd, conn)">
                                 <el-button text :icon="MoreFilled" circle size="small"/>
@@ -64,12 +67,17 @@ const ConnectionManager = {
                 <el-form-item label="数据库类型" prop="type">
                     <el-select v-model="form.type" placeholder="选择类型" style="width:100%;">
                         <el-option label="MySQL" value="mysql"/>
+                        <el-option label="MariaDB" value="mariadb"/>
+                        <el-option label="PostgreSQL" value="postgresql"/>
+                        <el-option label="SQL Server" value="mssql"/>
+                        <el-option label="Oracle" value="oracle"/>
                         <el-option label="SQLite" value="sqlite"/>
+                        <el-option label="H2" value="h2"/>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="JDBC URL" prop="jdbcUrl">
                     <el-input v-model="form.jdbcUrl" type="textarea" :rows="2"
-                        :placeholder="form.type === 'sqlite' ? 'jdbc:sqlite:/path/to/database.db' : 'jdbc:mysql://localhost:3306/mydb?useSSL=false&serverTimezone=UTC'"/>
+                        :placeholder="jdbcUrlPlaceholder"/>
                 </el-form-item>
                 <el-form-item label="用户名" v-if="form.type !== 'sqlite'">
                     <el-input v-model="form.username" placeholder="数据库用户名"/>
@@ -87,13 +95,14 @@ const ConnectionManager = {
         </el-dialog>
     </div>
     `,
-    emits: ['select'],
+    emits: ['select', 'disconnect'],
     setup(props, { emit }) {
         const { ref, reactive, onMounted } = Vue;
         const { ElMessage, ElMessageBox } = ElementPlus;
         const Icons = ElementPlusIconsVue || {};
 
         const connections = ref([]);
+        const statusMap = ref({});
         const dialogVisible = ref(false);
         const editing = ref(false);
         const testing = ref(false);
@@ -111,28 +120,49 @@ const ConnectionManager = {
         };
 
         const typeIcon = (type) => {
-            if (type === 'sqlite') return 'Coin';
-            if (type === 'mysql') return 'DataLine';
-            return 'Files';
+            const map = { sqlite: 'Coin', mysql: 'DataLine', mariadb: 'DataLine',
+                postgresql: 'Files', mssql: 'Files', oracle: 'Coin', h2: 'Coin' };
+            return map[type] || 'Files';
         };
         const typeColor = (type) => {
-            if (type === 'sqlite') return '#67c23a';
-            if (type === 'mysql') return '#409eff';
-            return '#909399';
+            const map = { sqlite: '#67c23a', mysql: '#409eff', mariadb: '#409eff',
+                postgresql: '#67c23a', mssql: '#e6a23c', oracle: '#f56c6c', h2: '#909399' };
+            return map[type] || '#909399';
         };
         const typeTag = (type) => {
-            if (type === 'sqlite') return 'success';
-            if (type === 'mysql') return 'primary';
-            return 'info';
+            const map = { sqlite: 'success', mysql: 'primary', mariadb: 'primary',
+                postgresql: 'success', mssql: 'warning', oracle: 'danger', h2: 'info' };
+            return map[type] || 'info';
         };
         const formatTime = (ts) => {
             if (!ts) return '-';
             return new Date(ts).toLocaleString('zh-CN');
         };
 
+        const jdbcUrlPlaceholder = Vue.computed(() => {
+            const map = {
+                sqlite: 'jdbc:sqlite:/path/to/database.db',
+                mysql: 'jdbc:mysql://localhost:3306/mydb?useSSL=false&serverTimezone=UTC',
+                mariadb: 'jdbc:mariadb://localhost:3306/mydb',
+                postgresql: 'jdbc:postgresql://localhost:5432/mydb',
+                mssql: 'jdbc:sqlserver://localhost:1433;databaseName=mydb',
+                oracle: 'jdbc:oracle:thin:@localhost:1521:orcl',
+                h2: 'jdbc:h2:mem:testdb 或 jdbc:h2:file:/path/to/db',
+            };
+            return map[form.type] || 'jdbc:数据库类型://host:port/database';
+        });
+
         async function load() {
             try {
                 connections.value = await Api.connections.list();
+                // 异步获取每个连接的状态
+                for (const conn of connections.value) {
+                    Api.connections.status(conn.id).then(s => {
+                        statusMap.value[conn.id] = s;
+                    }).catch(() => {
+                        statusMap.value[conn.id] = { active: false };
+                    });
+                }
             } catch (e) {
                 ElMessage.error('加载连接列表失败: ' + e.message);
             }
@@ -203,6 +233,8 @@ const ConnectionManager = {
                 try {
                     await Api.connections.disconnect(conn.id);
                     ElMessage.success('连接已断开');
+                    emit('disconnect', conn.id);
+                    await load();
                 } catch (e) { ElMessage.error(e.message); }
             } else if (cmd === 'delete') {
                 try {
@@ -221,8 +253,8 @@ const ConnectionManager = {
         onMounted(load);
 
         return {
-            connections, dialogVisible, editing, testing, saving, formRef, form, rules,
-            typeIcon, typeColor, typeTag, formatTime,
+            connections, statusMap, dialogVisible, editing, testing, saving, formRef, form, rules,
+            typeIcon, typeColor, typeTag, formatTime, jdbcUrlPlaceholder,
             openCreate, save, testConnection, handleCommand,
             Plus: Icons.Plus, MoreFilled: Icons.MoreFilled, Connection: Icons.Connection,
             Edit: Icons.Edit, Delete: Icons.Delete, SwitchButton: Icons.SwitchButton,

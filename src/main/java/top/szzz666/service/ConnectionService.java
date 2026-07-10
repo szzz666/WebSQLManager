@@ -26,26 +26,44 @@ public class ConnectionService {
     }
 
     /**
-     * 列出所有连接配置（脱敏）
+     * 列出所有连接配置（脱敏，不修改原始对象）
      */
     public List<ConnectionConfig> listConnections() {
         List<ConnectionConfig> list = connectionManager.listConfigs();
-        // 脱敏处理
+        // 返回副本进行脱敏，避免修改内存中的原始密码
+        java.util.List<ConnectionConfig> result = new java.util.ArrayList<>();
         for (ConnectionConfig c : list) {
-            c.setPassword(null);
+            result.add(copyWithoutPassword(c));
         }
-        return list;
+        return result;
     }
 
     /**
-     * 获取单个连接配置（脱敏）
+     * 获取单个连接配置（脱敏，不修改原始对象）
      */
     public ConnectionConfig getConnection(String id) {
         ConnectionConfig c = connectionManager.getConfig(id);
         if (c != null) {
-            c.setPassword(null);
+            return copyWithoutPassword(c);
         }
-        return c;
+        return null;
+    }
+
+    /**
+     * 创建副本并清除密码（不影响原始对象）
+     */
+    private ConnectionConfig copyWithoutPassword(ConnectionConfig original) {
+        ConnectionConfig copy = new ConnectionConfig();
+        copy.setId(original.getId());
+        copy.setName(original.getName());
+        copy.setType(original.getType());
+        copy.setJdbcUrl(original.getJdbcUrl());
+        copy.setUsername(original.getUsername());
+        copy.setPassword(null);
+        copy.setAutoReconnect(original.isAutoReconnect());
+        copy.setCreatedAt(original.getCreatedAt());
+        copy.setUpdatedAt(original.getUpdatedAt());
+        return copy;
     }
 
     /**
@@ -114,7 +132,7 @@ public class ConnectionService {
     }
 
     /**
-     * 连接状态信息
+     * 连接状态信息（不触发自动重连）
      */
     public Map<String, Object> getConnectionStatus(String id) {
         Map<String, Object> status = new HashMap<>();
@@ -126,15 +144,19 @@ public class ConnectionService {
         status.put("exists", true);
         status.put("name", config.getName());
         status.put("type", config.getType());
-        // 检查是否活跃
-        try {
-            Connection conn = connectionManager.getConnection(id);
-            status.put("active", !conn.isClosed() && conn.isValid(3));
-            DatabaseDialect dialect = connectionManager.getDialect(id);
-            status.put("version", dialect.getDatabaseVersion(conn));
-        } catch (Exception e) {
-            status.put("active", false);
-            status.put("error", e.getMessage());
+        // 检查是否活跃（不创建新连接）
+        boolean active = connectionManager.isActive(id);
+        status.put("active", active);
+        if (active) {
+            try {
+                Connection conn = connectionManager.getActiveConnection(id);
+                if (conn != null) {
+                    DatabaseDialect dialect = connectionManager.getDialect(id);
+                    status.put("version", dialect.getDatabaseVersion(conn));
+                }
+            } catch (Exception e) {
+                status.put("error", e.getMessage());
+            }
         }
         return status;
     }

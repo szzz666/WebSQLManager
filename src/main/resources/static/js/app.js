@@ -66,6 +66,14 @@ const App = {
             mobileSidebarOpen.value = false;
         }
 
+        function onDisconnect(connId) {
+            // 如果断开的是当前活动连接，清除并回到连接管理
+            if (activeConnection.value && activeConnection.value.id === connId) {
+                activeConnection.value = null;
+                activeMenu.value = 'connections';
+            }
+        }
+
         function selectMenu(menu) {
             activeMenu.value = menu;
             mobileSidebarOpen.value = false;
@@ -94,7 +102,7 @@ const App = {
             loggedIn, authEnabled, username, loginForm, loginLoading,
             activeMenu, sidebarCollapsed, mobileSidebarOpen,
             activeConnection, browseTable,
-            doLogin, doLogout, selectConnection, selectMenu, browseData, toggleSidebar,
+            doLogin, doLogout, selectConnection, onDisconnect, selectMenu, browseData, toggleSidebar,
             icons,
         };
     },
@@ -170,7 +178,7 @@ const App = {
                             </div>
                             <div class="nav-item" :class="{ active: activeMenu === 'sql' }" @click="selectMenu('sql')">
                                 <el-icon><EditPen/></el-icon>
-                                <span v-if="!sidebarCollapsed">SQL 查询</span>
+                                <span v-if="!sidebarCollapsed">SQL 命令执行</span>
                             </div>
                         </template>
                     </div>
@@ -183,7 +191,7 @@ const App = {
 
                 <!-- 主内容 -->
                 <div class="app-main">
-                    <connection-manager v-if="activeMenu === 'connections'" @select="selectConnection"/>
+                    <connection-manager v-if="activeMenu === 'connections'" @select="selectConnection" @disconnect="onDisconnect"/>
                     <table-explorer v-else-if="activeMenu === 'tables' && activeConnection"
                         :conn-id="activeConnection.id" @browse="browseData"/>
                     <data-browser v-else-if="activeMenu === 'data' && activeConnection"

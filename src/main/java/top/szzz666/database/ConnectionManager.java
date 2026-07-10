@@ -207,6 +207,38 @@ public class ConnectionManager {
     }
 
     /**
+     * 检查连接是否活跃（不创建新连接）
+     */
+    public boolean isActive(String id) {
+        Connection conn = activeConnections.get(id);
+        if (conn == null) return false;
+        try {
+            return !conn.isClosed() && conn.isValid(3);
+        } catch (SQLException e) {
+            activeConnections.remove(id);
+            return false;
+        }
+    }
+
+    /**
+     * 获取活跃连接（不创建新连接），返回 null 表示无活跃连接
+     */
+    public Connection getActiveConnection(String id) {
+        Connection conn = activeConnections.get(id);
+        if (conn == null) return null;
+        try {
+            if (conn.isClosed() || !conn.isValid(3)) {
+                activeConnections.remove(id);
+                return null;
+            }
+            return conn;
+        } catch (SQLException e) {
+            activeConnections.remove(id);
+            return null;
+        }
+    }
+
+    /**
      * 关闭指定连接
      */
     public void closeConnection(String id) {

@@ -238,6 +238,19 @@ public abstract class AbstractDialect implements DatabaseDialect {
     }
 
     @Override
+    public boolean supportsMultiColumnAlter() {
+        return true;
+    }
+
+    @Override
+    public String buildRenameColumnSql(String tableName, String oldName, String newName, ColumnDefinition col) {
+        // 默认使用 SQL 标准语法（大多数现代数据库支持）
+        return "ALTER TABLE " + quoteIdentifier(tableName) +
+                " RENAME COLUMN " + quoteIdentifier(oldName) +
+                " TO " + quoteIdentifier(newName);
+    }
+
+    @Override
     public String getDatabaseVersion(Connection conn) throws SQLException {
         DatabaseMetaData meta = conn.getMetaData();
         return meta.getDatabaseProductName() + " " + meta.getDatabaseProductVersion();

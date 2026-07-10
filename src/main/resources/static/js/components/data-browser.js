@@ -168,8 +168,15 @@ const DataBrowser = {
             if (!props.connId) return;
             try {
                 tables.value = await Api.tables.list(props.connId);
-                if (props.initialTable) {
+                // 自动选中表：优先用 initialTable，否则选第一个表
+                if (props.initialTable && tables.value.some(t => t.name === props.initialTable)) {
                     selectedTable.value = props.initialTable;
+                } else if (tables.value.length > 0 && !selectedTable.value) {
+                    selectedTable.value = tables.value[0].name;
+                }
+                // 自动加载数据
+                if (selectedTable.value) {
+                    await loadData();
                 }
             } catch (e) { ElMessage.error('加载表列表失败: ' + e.message); }
         }
@@ -222,10 +229,19 @@ const DataBrowser = {
 
         function onSelectionChange(rows) { selectedRows.value = rows; }
 
-        function openInsert() {
+        async function openInsert() {
             formMode.value = 'insert';
             Object.keys(recordForm).forEach(k => delete recordForm[k]);
-            if (tableInfo.value) {
+            // 确保 tableInfo 已加载（数据查询失败时可能未加载）
+            if (!tableInfo.value || tableInfo.value.name !== selectedTable.value) {
+                try {
+                    tableInfo.value = await Api.tables.get(props.connId, selectedTable.value);
+                } catch (e) {
+                    ElMessage.error('加载表结构失败: ' + e.message);
+                    return;
+                }
+            }
+            if (tableInfo.value && tableInfo.value.columns) {
                 tableInfo.value.columns.forEach(col => {
                     recordForm[col.name] = col.defaultValue || '';
                 });

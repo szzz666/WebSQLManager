@@ -15,6 +15,11 @@ public class DialectFactory {
     static {
         register(new SqliteDialect());
         register(new MysqlDialect());
+        register(new MariadbDialect());
+        register(new PostgresqlDialect());
+        register(new MssqlDialect());
+        register(new OracleDialect());
+        register(new H2Dialect());
     }
 
     public static void register(DatabaseDialect dialect) {

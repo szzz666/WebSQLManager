@@ -59,7 +59,7 @@ public class SqlService {
                         }
                         List<Object> row = new ArrayList<>(colCount);
                         for (int i = 1; i <= colCount; i++) {
-                            row.add(rs.getObject(i));
+                            row.add(safeGetObject(rs, i));
                         }
                         result.getRows().add(row);
                         rowCount++;
@@ -137,7 +137,7 @@ public class SqlService {
                     }
                     List<Object> row = new ArrayList<>(colCount);
                     for (int i = 1; i <= colCount; i++) {
-                        row.add(rs.getObject(i));
+                        row.add(safeGetObject(rs, i));
                     }
                     result.getRows().add(row);
                     rowCount++;
@@ -239,7 +239,7 @@ public class SqlService {
                 while (rs.next()) {
                     List<Object> row = new ArrayList<>(colCount);
                     for (int i = 1; i <= colCount; i++) {
-                        row.add(rs.getObject(i));
+                        row.add(safeGetObject(rs, i));
                     }
                     rows.add(row);
                 }
@@ -337,5 +337,29 @@ public class SqlService {
         }
         // 字符串转义
         return "'" + v.toString().replace("'", "''") + "'";
+    }
+
+    /**
+     * 安全读取 ResultSet 列值，将 java.time / java.sql 时间对象转为字符串
+     * 避免 Gson 反射序列化 java.time 类型时触发 Java 模块系统限制
+     */
+    public static Object safeGetObject(java.sql.ResultSet rs, int index) throws SQLException {
+        Object value = rs.getObject(index);
+        if (value == null) return null;
+        // java.time 类型转为字符串
+        if (value instanceof java.time.temporal.Temporal) {
+            return value.toString();
+        }
+        // java.sql 时间类型保持原样（Gson 已注册适配器），但也转字符串更安全
+        if (value instanceof java.sql.Timestamp
+                || value instanceof java.sql.Date
+                || value instanceof java.sql.Time) {
+            return value.toString();
+        }
+        // byte[] 转为 Base64 字符串，避免 Gson 序列化异常
+        if (value instanceof byte[]) {
+            return java.util.Base64.getEncoder().encodeToString((byte[]) value);
+        }
+        return value;
     }
 }
