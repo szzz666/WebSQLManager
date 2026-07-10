@@ -1,5 +1,6 @@
 package top.szzz666;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.szzz666.config.MyConfig;
@@ -11,8 +12,8 @@ import java.util.Scanner;
 public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
     public static top.szzz666.config.EasyConfig config;
+    @Getter
     private static ConnectionManager connectionManager;
-    private static WebServer webServer;
 
     public static void main(String[] args) {
         logger.info("========================================");
@@ -28,7 +29,7 @@ public class Main {
         logger.info("连接管理器初始化完成，已加载 {} 个连接配置", connectionManager.listConfigs().size());
 
         // 3. 启动 Web 服务
-        webServer = new WebServer(connectionManager);
+        WebServer webServer = new WebServer(connectionManager);
         webServer.start();
 
         logger.info("========================================");
@@ -62,7 +63,4 @@ public class Main {
         }
     }
 
-    public static ConnectionManager getConnectionManager() {
-        return connectionManager;
-    }
 }
