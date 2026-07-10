@@ -39,3 +39,8 @@ dependency-reduced-pom.xml
 !**/src/main/**/target/
 !**/src/test/**/target/
 META-INF/
+
+### WebSQLManager ###
+/connections.json
+/config.yml
+/logs/
