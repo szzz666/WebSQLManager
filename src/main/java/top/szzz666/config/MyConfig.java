@@ -13,26 +13,21 @@ public class MyConfig {
     @ConfigItem(key = "log.level", comment = "日志等级: OFF, FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL")
     public static String logLevel = "INFO";
     //设置
-    @ConfigItem(key = "settings.async", comment = "是否开启异步消息处理")
-    public static boolean async = true;
     @ConfigItem(key = "settings.cordPoolSize", comment = "核心线程数：-1时为自动即 CPU核心数 / 2")
-    public static int cordPoolSize = -1;
+    public static int cordPoolSize = 1;
     @ConfigItem(key = "settings.maxPoolSize", comment = "最大线程数：-1时为自动即 CPU核心数 * 4")
     public static int maxPoolSize = -1;
     @ConfigItem(key = "settings.keepAliveTime", comment = "非核心线程存活时间（秒）")
     public static long keepAliveTime = 60L;
     @ConfigItem(key = "settings.maxQueueSize", comment = "最大队列大小")
     public static int maxQueueSize = 100;
-    @ConfigItem(key = "settings.cronUtilMatchSecond", comment = "是否开启CronUtil的秒级匹配")
-    public static boolean cronUtilMatchSecond = true;
+
 
     //Web服务
     @ConfigItem(key = "server.port", comment = "Web服务监听端口")
     public static int serverPort = 8080;
     @ConfigItem(key = "server.host", comment = "Web服务监听地址，0.0.0.0表示所有网卡")
     public static String serverHost = "0.0.0.0";
-    @ConfigItem(key = "server.contextPath", comment = "Web服务上下文路径")
-    public static String serverContextPath = "";
     @ConfigItem(key = "server.maxQueryRows", comment = "单次查询最大返回行数（防止内存溢出）")
     public static int maxQueryRows = 10000;
     @ConfigItem(key = "server.queryTimeout", comment = "SQL查询超时时间（秒）")
@@ -47,8 +42,6 @@ public class MyConfig {
     public static String authPassword = "admin123";
     @ConfigItem(key = "auth.sessionTimeout", comment = "会话超时时间（分钟）")
     public static int sessionTimeout = 120;
-    @ConfigItem(key = "auth.secretKey", comment = "会话签名密钥，请修改为随机字符串")
-    public static String authSecretKey = "WebSQLManager-Change-This-Secret-Key-2024";
 
 
 
