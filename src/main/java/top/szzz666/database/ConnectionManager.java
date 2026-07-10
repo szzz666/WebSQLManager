@@ -7,6 +7,7 @@ import top.szzz666.tools.JsonUtil;
 
 import java.io.File;
 import java.lang.reflect.Type;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -68,8 +69,8 @@ public class ConnectionManager {
         try {
             List<ConnectionConfig> list = new ArrayList<>(configs.values());
             String json = JsonUtil.toCompactJson(list);
-            java.nio.file.Files.writeString(configFile.toPath(), json);
-            logger.debug("连接配置已保存");
+            Files.writeString(configFile.toPath(), json);
+            logger.info("连接配置已保存");
         } catch (Exception e) {
             logger.error("保存连接配置失败", e);
         }
