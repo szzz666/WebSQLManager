@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebSQLManager - 数据库管理面板</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗄️</text></svg>">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <!-- Element Plus 样式 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-plus@2.7.6/dist/index.css">
     <!-- 自定义样式 -->
-    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/app.css?v=20260715-2">
 </head>
 <body>
     <div id="app">
@@ -23,29 +24,20 @@
     </div>
 
     <!-- Vue 3 -->
-    <script src="https://cdn.jsdelivr.net/npm/vue@3.4.31/dist/vue.global.prod.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/vue@3.4.31/dist/vue.global.prod.js"></script>
     <!-- Element Plus -->
-    <script src="https://cdn.jsdelivr.net/npm/element-plus@2.7.6/dist/index.full.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/element-plus@2.7.6/dist/index.full.min.js"></script>
     <!-- Element Plus 中文语言包 -->
-    <script src="https://cdn.jsdelivr.net/npm/element-plus@2.7.6/dist/locale/zh-cn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/element-plus@2.7.6/dist/locale/zh-cn.min.js"></script>
     <!-- Element Plus 图标 -->
-    <script src="https://cdn.jsdelivr.net/npm/@element-plus/icons-vue@2.3.1/dist/index.iife.min.js"></script>
-    <!-- CodeMirror SQL 编辑器 -->
-    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/sql/sql.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/hint/show-hint.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/hint/sql-hint.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/edit/matchbrackets.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/dracula.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/hint/show-hint.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/@element-plus/icons-vue@2.3.1/dist/index.iife.min.js"></script>
 
     <!-- 应用脚本 -->
-    <script src="/js/api.js"></script>
-    <script src="/js/components/connection-manager.js"></script>
-    <script src="/js/components/table-explorer.js"></script>
-    <script src="/js/components/data-browser.js"></script>
-    <script src="/js/components/sql-editor.js"></script>
-    <script src="/js/app.js?"></script>
+    <script defer src="/js/api.js"></script>
+    <script defer src="/js/components/connection-manager.js"></script>
+    <script defer src="/js/components/table-explorer.js"></script>
+    <script defer src="/js/components/data-browser.js"></script>
+    <script defer src="/js/components/sql-editor.js"></script>
+    <script defer src="/js/app.js?v=20260715-2"></script>
 </body>
 </html>

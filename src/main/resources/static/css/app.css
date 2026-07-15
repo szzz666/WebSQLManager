@@ -22,11 +22,15 @@ html, body {
 }
 
 #app {
+    height: 100vh;
+}
+
+/* 首屏完成后再加载远程背景，避免背景请求抢占页面关键资源。 */
+.background-ready #app {
     background-image: url(https://www.loliapi.com/acg/);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    height: 100vh;
 }
 
 /* 登录页样式 */
@@ -203,16 +207,19 @@ html, body {
 .sql-editor-container {
     background: #fff;
     border-radius: 8px;
+    overflow: visible;
+    min-height: calc(100vh - 200px);
+}
+
+.sql-editor-input {
+    height: 300px !important;
+    min-height: 0;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+    border-radius: 8px;
 }
 
 .CodeMirror {
-    flex: 1;
-    height: auto !important;
-    min-height: 200px;
+    height: 100% !important;
     font-size: 14px;
 }
 
@@ -319,6 +326,10 @@ html, body {
 
     .toolbar {
         gap: 4px;
+    }
+
+    .sql-editor-input {
+        height: 280px;
     }
 
     .nav-item span:not(.el-icon) {

@@ -225,3 +225,15 @@ app.component('TableExplorer', TableExplorer);
 app.component('DataBrowser', DataBrowser);
 app.component('SqlEditor', SqlEditor);
 app.mount('#app');
+
+// 先完成首屏渲染，再加载远程背景图，避免背景请求拖慢页面可交互时间。
+requestAnimationFrame(() => {
+    setTimeout(() => {
+        document.documentElement.classList.add('background-ready');
+        // 直接设置背景，确保不受旧 CSS 缓存或样式覆盖影响。
+        document.getElementById('app').style.backgroundImage = 'url("https://www.loliapi.com/acg/")';
+        document.getElementById('app').style.backgroundSize = 'cover';
+        document.getElementById('app').style.backgroundPosition = 'center';
+        document.getElementById('app').style.backgroundRepeat = 'no-repeat';
+    }, 0);
+});

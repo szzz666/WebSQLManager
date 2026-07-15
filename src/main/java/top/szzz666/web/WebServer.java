@@ -73,7 +73,7 @@ public class WebServer {
 
         // 等待初始化完成
         awaitInitialization();
-        logger.info("Web 服务已启动: http://{}:{}", serverHost.equals("0.0.0.0") ? "localhost" : serverHost, serverPort);
+        logger.info("Web 服务已启动");
 
         // 定期清理过期会话
         TaskUtil.Repeating(SessionManager::cleanup, 5, true, TimeUnit.MINUTES);

@@ -23,8 +23,8 @@ const SqlEditor = {
             <p>请先选择一个数据库连接</p>
         </div>
 
-        <div v-else class="sql-editor-container" style="height:calc(100vh - 200px);">
-            <div ref="editorRef" style="flex:1;overflow:auto;"></div>
+        <div v-else class="sql-editor-container">
+            <div class="sql-editor-input" ref="editorRef"></div>
 
             <!-- 执行结果 -->
             <div class="query-result" v-if="results.length > 0">
@@ -84,6 +84,40 @@ const SqlEditor = {
         const results = ref([]);
         const activeResult = ref('0');
         const history = ref([]);
+        let editorLoading = null;
+
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = () => reject(new Error('CodeMirror 加载失败'));
+                document.head.appendChild(script);
+            });
+        }
+
+        function loadEditorAssets() {
+            if (typeof CodeMirror !== 'undefined') return Promise.resolve();
+            if (editorLoading) return editorLoading;
+            const base = 'https://cdn.jsdelivr.net/npm/codemirror@5.65.16/';
+            const styles = [
+                'lib/codemirror.min.css',
+                'theme/dracula.min.css',
+                'addon/hint/show-hint.min.css',
+            ];
+            styles.forEach(path => {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = base + path;
+                document.head.appendChild(link);
+            });
+            editorLoading = loadScript(base + 'lib/codemirror.min.js')
+                .then(() => loadScript(base + 'mode/sql/sql.min.js'))
+                .then(() => loadScript(base + 'addon/hint/show-hint.min.js'))
+                .then(() => loadScript(base + 'addon/hint/sql-hint.min.js'))
+                .then(() => loadScript(base + 'addon/edit/matchbrackets.min.js'));
+            return editorLoading;
+        }
 
         function arrayToObj(arr, cols) {
             const obj = {};
@@ -180,12 +214,12 @@ const SqlEditor = {
         }
 
         onMounted(() => {
-            nextTick(initEditor);
+            nextTick(() => loadEditorAssets().then(initEditor).catch(e => ElMessage.error(e.message)));
         });
 
         watch(() => props.connId, (v) => {
             if (v && !cmEditor) {
-                nextTick(initEditor);
+                nextTick(() => loadEditorAssets().then(initEditor).catch(e => ElMessage.error(e.message)));
             }
         });
 
