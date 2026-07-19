@@ -6,6 +6,7 @@ import top.szzz666.model.ApiResponse;
 import top.szzz666.service.SqlService;
 import top.szzz666.tools.JsonUtil;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import static spark.Spark.*;
@@ -48,8 +49,8 @@ public class SqlController {
             String connId = req.params(":connId");
             Map<String, Object> body = JsonUtil.toMap(req.body());
             String sql = String.valueOf(body.get("sql"));
-            long offset = body.get("offset") == null ? 0 : Long.parseLong(String.valueOf(body.get("offset")));
-            int limit = body.get("limit") == null ? 100 : Integer.parseInt(String.valueOf(body.get("limit")));
+            long offset = body.get("offset") == null ? 0 : toLong(body.get("offset"), "offset");
+            int limit = body.get("limit") == null ? 100 : toInt(body.get("limit"), "limit");
             var result = sqlService.executeQueryPaged(connId, sql, offset, limit);
             return JsonUtil.toCompactJson(ApiResponse.success(result));
         });
@@ -70,5 +71,21 @@ public class SqlController {
             res.header("Content-Disposition", "attachment; filename=\"" + filename + "\"");
             return content;
         });
+    }
+
+    private static long toLong(Object value, String field) {
+        try {
+            return new BigDecimal(String.valueOf(value)).longValueExact();
+        } catch (NumberFormatException | ArithmeticException e) {
+            throw new IllegalArgumentException(field + " 必须是整数", e);
+        }
+    }
+
+    private static int toInt(Object value, String field) {
+        try {
+            return new BigDecimal(String.valueOf(value)).intValueExact();
+        } catch (NumberFormatException | ArithmeticException e) {
+            throw new IllegalArgumentException(field + " 必须是整数", e);
+        }
     }
 }
