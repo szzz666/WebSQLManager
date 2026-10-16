@@ -7,7 +7,7 @@ const DataBrowser = {
     template: `
     <div class="data-browser">
         <div class="toolbar">
-            <h2 style="margin:0;font-size:20px;color:#303133;">数据浏览</h2>
+            <h2 style="margin:0;font-size:20px;color:var(--el-text-color-primary);">数据浏览</h2>
             <el-select v-model="selectedTable" placeholder="选择数据表" filterable style="width:240px;margin-left:16px;" @change="loadData">
                 <el-option v-for="t in tables" :key="t.name" :label="t.name" :value="t.name"/>
             </el-select>
@@ -30,14 +30,11 @@ const DataBrowser = {
             </el-button>
         </div>
 
-        <div v-if="!selectedTable" class="empty-state">
-            <el-icon class="empty-icon"><DataBoard/></el-icon>
-            <p>请从上方选择一个数据表开始浏览</p>
-        </div>
+        <el-empty v-if="!selectedTable" description="请从上方选择一个数据表开始浏览"/>
 
         <div v-else class="data-table-wrapper">
             <!-- 查询条件 -->
-            <div style="padding:10px 12px;background:#fafafa;border-bottom:1px solid #ebeef5;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <div style="padding:10px 12px;background:var(--el-fill-color-light);border-bottom:1px solid var(--el-border-color-lighter);display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
                 <el-input v-model="whereClause" placeholder="WHERE 条件（可选），例如: id = 1 AND name LIKE '%test%'" style="flex:1;min-width:300px;" size="small" clearable @keyup.enter="loadData"/>
                 <el-button size="small" type="primary" @click="loadData">查询</el-button>
                 <el-tooltip content="提示：直接输入WHERE后的条件，不含WHERE关键字">
@@ -52,7 +49,7 @@ const DataBrowser = {
                     <template #header>
                         <div style="line-height:1.3;">
                             <div style="font-weight:600;">{{ col }}</div>
-                            <div style="font-size:11px;color:#909399;font-weight:400;">{{ data.columnTypes?.[i] || '' }}</div>
+                            <div style="font-size:11px;color:var(--el-text-color-secondary);font-weight:400;">{{ data.columnTypes?.[i] || '' }}</div>
                         </div>
                     </template>
                     <template #default="{ row }">
@@ -69,7 +66,7 @@ const DataBrowser = {
 
             <!-- 分页 -->
             <div style="padding:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-                <div style="font-size:13px;color:#606266;">
+                <div style="font-size:13px;color:var(--el-text-color-regular);">
                     共 {{ formatNumber(data.total) }} 条，第 {{ data.page }} / {{ data.totalPages || 1 }} 页
                 </div>
                 <el-pagination
@@ -120,7 +117,25 @@ const DataBrowser = {
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="选择文件">
-                    <input type="file" :accept="importFormat === 'csv' ? '.csv' : '.json'" ref="importFileRef" @change="onImportFileChange" style="width:100%;"/>
+                    <el-upload
+                        ref="importUploadRef"
+                        :key="importFormat"
+                        :auto-upload="false"
+                        :show-file-list="false"
+                        :accept="importFormat === 'csv' ? '.csv' : '.json'"
+                        drag
+                        style="width:100%;"
+                        :on-change="onImportFileChange">
+                        <el-icon class="el-icon--upload"><UploadFilled/></el-icon>
+                        <div class="el-upload__text">
+                            将文件拖到此处，或<em>点击选择</em>
+                        </div>
+                        <template #tip>
+                            <div class="el-upload__tip">
+                                {{ importFileName ? '已选择：' + importFileName : '仅支持 ' + (importFormat === 'csv' ? '.csv' : '.json') + ' 文件' }}
+                            </div>
+                        </template>
+                    </el-upload>
                 </el-form-item>
                 <el-form-item label="或粘贴">
                     <el-input v-model="importContent" type="textarea" :rows="6" :placeholder="importFormat === 'csv' ? 'col1,col2,col3\\nval1,val2,val3' : '[{&quot;col1&quot;:&quot;val1&quot;,&quot;col2&quot;:&quot;val2&quot;}]'"/>
@@ -363,22 +378,48 @@ const DataBrowser = {
         const importMode = ref('ignore');
         const importContent = ref('');
         const importingData = ref(false);
-        const importFileRef = ref(null);
+        const importUploadRef = ref(null);
         const importFileContent = ref('');
+        const importFileName = ref('');
 
         function openImportDialog() {
             importFormat.value = 'csv';
             importMode.value = 'ignore';
             importContent.value = '';
-            importFileContent.value = '';
+            resetImportFile();
             importDialogVisible.value = true;
         }
 
-        async function onImportFileChange(event) {
-            const files = event.target.files;
-            if (files && files.length > 0) {
-                importFileContent.value = await files[0].text();
+        // 读取文件文本：优先用 Blob.text()，旧浏览器回退到 FileReader
+        function readFileText(file) {
+            if (typeof file.text === 'function') {
+                return file.text();
             }
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(String(reader.result));
+                reader.onerror = () => reject(reader.error || new Error('读取失败'));
+                reader.readAsText(file);
+            });
+        }
+
+        // el-upload 非自动上传模式：从 uploadFile.raw 读取文件内容
+        async function onImportFileChange(uploadFile) {
+            const raw = uploadFile && uploadFile.raw;
+            if (!raw) return;
+            try {
+                importFileContent.value = await readFileText(raw);
+                importFileName.value = uploadFile.name || raw.name;
+            } catch (e) {
+                ElMessage.error('读取文件失败: ' + e.message);
+            }
+        }
+
+        // 切换导入格式时清空已选文件，避免 CSV 内容被当作 JSON 导入
+        function resetImportFile() {
+            importFileContent.value = '';
+            importFileName.value = '';
+            if (importUploadRef.value) importUploadRef.value.clearFiles();
         }
 
         async function doImportData() {
@@ -392,6 +433,8 @@ const DataBrowser = {
                 const result = await Api.data.import(props.connId, selectedTable.value, importFormat.value, content, importMode.value);
                 ElMessage.success(`导入完成: 共 ${result.totalRows} 行，影响 ${result.affectedRows} 行`);
                 importDialogVisible.value = false;
+                importFileContent.value = '';
+                importFileName.value = '';
                 await loadData();
             } catch (e) {
                 ElMessage.error('导入失败: ' + e.message);
@@ -405,6 +448,9 @@ const DataBrowser = {
             loadTables();
         }, { immediate: true });
 
+        // 切换格式时重置已选文件（el-upload 亦通过 :key 重新挂载）
+        watch(importFormat, resetImportFile);
+
         watch(() => props.initialTable, (v) => {
             if (v) { selectedTable.value = v; loadData(); }
         });
@@ -416,10 +462,10 @@ const DataBrowser = {
             openInsert, openEdit, saveRecord, confirmDeleteRow, batchDelete,
             exportTableData, exporting,
             importDialogVisible, importFormat, importMode, importContent, importingData,
-            importFileRef, openImportDialog, onImportFileChange, doImportData,
+            importUploadRef, importFileName, openImportDialog, onImportFileChange, resetImportFile, doImportData,
             Refresh: Icons.Refresh, Plus: Icons.Plus, Delete: Icons.Delete,
             InfoFilled: Icons.InfoFilled, DataBoard: Icons.DataBoard,
-            Download: Icons.Download, Upload: Icons.Upload,
+            Download: Icons.Download, Upload: Icons.Upload, UploadFilled: Icons.UploadFilled,
         };
     }
 };

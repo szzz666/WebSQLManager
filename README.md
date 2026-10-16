@@ -37,9 +37,12 @@
 - **Lombok** — 简化代码
 
 ### 前端
-- **Vue 3** — 响应式框架
-- **Element Plus** — UI 组件库
+- **Vue 3.4** — 响应式框架
+- **Element Plus 2.7** — UI 组件库（含中文语言包与图标）
+- **Axios 1.7** — HTTP 客户端，统一处理请求/响应拦截与认证
 - **CodeMirror 5** — SQL 代码编辑器
+
+前端依赖均通过 CDN 引入，主题样式统一使用 Element Plus CSS 变量（`--el-color-*` 等），便于换肤。
 
 ## 快速开始
 

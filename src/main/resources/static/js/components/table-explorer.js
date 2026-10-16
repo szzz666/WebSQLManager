@@ -7,7 +7,7 @@ const TableExplorer = {
     template: `
     <div class="table-explorer">
         <div class="toolbar">
-            <h2 style="margin:0;font-size:20px;color:#303133;">数据表管理</h2>
+            <h2 style="margin:0;font-size:20px;color:var(--el-text-color-primary);">数据表管理</h2>
             <div class="spacer"></div>
             <el-button :icon="Refresh" @click="loadTables" circle/>
             <el-button type="primary" :icon="Plus" @click="openCreateTable">新建表</el-button>
@@ -17,7 +17,7 @@ const TableExplorer = {
             <el-table-column prop="name" label="表名" min-width="200">
                 <template #default="{ row }">
                     <el-icon><component :is="row.tableType === 'VIEW' ? 'View' : 'Table'"/></el-icon>
-                    <span style="margin-left:6px;font-weight:500;color:#409eff;cursor:pointer;">{{ row.name }}</span>
+                    <span style="margin-left:6px;font-weight:500;color:var(--el-color-primary);cursor:pointer;">{{ row.name }}</span>
                 </template>
             </el-table-column>
             <el-table-column prop="tableType" label="类型" width="120">
@@ -54,7 +54,7 @@ const TableExplorer = {
                             <el-table-column prop="ordinal" label="#" width="50" align="center"/>
                             <el-table-column prop="name" label="列名" min-width="150">
                                 <template #default="{ row }">
-                                    <span :style="{ fontWeight: row.primaryKey ? 700 : 400, color: row.primaryKey ? '#67c23a' : '#303133' }">{{ row.name }}</span>
+                                    <span :style="{ fontWeight: row.primaryKey ? 700 : 400, color: row.primaryKey ? 'var(--el-color-success)' : 'var(--el-text-color-primary)' }">{{ row.name }}</span>
                                 </template>
                             </el-table-column>
                             <el-table-column label="类型" width="160">
@@ -69,7 +69,7 @@ const TableExplorer = {
                             </el-table-column>
                             <el-table-column label="主键" width="70" align="center">
                                 <template #default="{ row }">
-                                    <el-icon v-if="row.primaryKey" color="#67c23a" :size="16"><Key/></el-icon>
+                                    <el-icon v-if="row.primaryKey" color="var(--el-color-success)" :size="16"><Key/></el-icon>
                                 </template>
                             </el-table-column>
                             <el-table-column label="自增" width="70" align="center">

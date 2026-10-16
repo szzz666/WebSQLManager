@@ -122,7 +122,7 @@ const App = {
                     </el-form-item>
                     <el-button type="primary" @click="doLogin" :loading="loginLoading" size="large" style="width:100%;">登 录</el-button>
                 </el-form>
-                <div style="margin-top:16px;font-size:12px;color:#909399;text-align:center;">
+                <div style="margin-top:16px;font-size:12px;color:var(--el-text-color-secondary);text-align:center;">
                     默认账号: admin / admin123
                 </div>
             </div>
@@ -143,7 +143,7 @@ const App = {
                     </el-tag>
                     <el-dropdown>
                         <span style="cursor:pointer;display:flex;align-items:center;gap:6px;">
-                            <el-avatar :size="28" style="background:#409eff;">{{ username?.charAt(0).toUpperCase() }}</el-avatar>
+                            <el-avatar :size="28" style="background:var(--el-color-primary);">{{ username?.charAt(0).toUpperCase() }}</el-avatar>
                             <span style="font-size:14px;">{{ username }}</span>
                         </span>
                         <template #dropdown>
@@ -162,26 +162,28 @@ const App = {
                         <span v-if="!sidebarCollapsed" style="font-weight:600;font-size:14px;">导航菜单</span>
                         <el-icon v-else><Menu/></el-icon>
                     </div>
-                    <div class="sidebar-nav">
-                        <div class="nav-item" :class="{ active: activeMenu === 'connections' }" @click="selectMenu('connections')">
+                    <el-menu class="sidebar-nav" :default-active="activeMenu" :collapse="sidebarCollapsed"
+                             :collapse-transition="false" @select="selectMenu"
+                             @click="mobileSidebarOpen = false">
+                        <el-menu-item index="connections">
                             <el-icon><Connection/></el-icon>
-                            <span v-if="!sidebarCollapsed">连接管理</span>
-                        </div>
+                            <template #title>连接管理</template>
+                        </el-menu-item>
                         <template v-if="activeConnection">
-                            <div class="nav-item" :class="{ active: activeMenu === 'tables' }" @click="selectMenu('tables')">
+                            <el-menu-item index="tables">
                                 <el-icon><Grid/></el-icon>
-                                <span v-if="!sidebarCollapsed">数据表</span>
-                            </div>
-                            <div class="nav-item" :class="{ active: activeMenu === 'data' }" @click="selectMenu('data')">
+                                <template #title>数据表</template>
+                            </el-menu-item>
+                            <el-menu-item index="data">
                                 <el-icon><DataBoard/></el-icon>
-                                <span v-if="!sidebarCollapsed">数据浏览</span>
-                            </div>
-                            <div class="nav-item" :class="{ active: activeMenu === 'sql' }" @click="selectMenu('sql')">
+                                <template #title>数据浏览</template>
+                            </el-menu-item>
+                            <el-menu-item index="sql">
                                 <el-icon><EditPen/></el-icon>
-                                <span v-if="!sidebarCollapsed">SQL 命令执行</span>
-                            </div>
+                                <template #title>SQL 命令执行</template>
+                            </el-menu-item>
                         </template>
-                    </div>
+                    </el-menu>
                     <div class="sidebar-footer" v-if="!sidebarCollapsed">
                         <div>WebSQLManager v1.0</div>
                         <div>多数据源管理面板</div>
@@ -198,10 +200,7 @@ const App = {
                         :conn-id="activeConnection.id" :initial-table="browseTable"/>
                     <sql-editor v-else-if="activeMenu === 'sql' && activeConnection"
                         :conn-id="activeConnection.id"/>
-                    <div v-else class="empty-state">
-                        <el-icon class="empty-icon"><DataBoard/></el-icon>
-                        <p>请从左侧选择功能，或先在「连接管理」中选择一个数据库</p>
-                    </div>
+                    <el-empty v-else description="请从左侧选择功能，或先在「连接管理」中选择一个数据库"/>
                 </div>
             </div>
         </div>

@@ -7,7 +7,7 @@ const SqlEditor = {
     template: `
     <div class="sql-editor">
         <div class="toolbar">
-            <h2 style="margin:0;font-size:20px;color:#303133;">SQL 命令执行</h2>
+            <h2 style="margin:0;font-size:20px;color:var(--el-text-color-primary);">SQL 命令执行</h2>
             <div class="spacer"></div>
             <el-tooltip content="Ctrl+Enter 执行">
                 <el-button type="primary" :icon="VideoPlay" @click="execute" :loading="executing" :disabled="!connId">执行</el-button>
@@ -18,10 +18,7 @@ const SqlEditor = {
             <el-button :icon="Delete" @click="clearEditor" circle/>
         </div>
 
-        <div v-if="!connId" class="empty-state">
-            <el-icon class="empty-icon"><EditPen/></el-icon>
-            <p>请先选择一个数据库连接</p>
-        </div>
+        <el-empty v-if="!connId" description="请先选择一个数据库连接"/>
 
         <div v-else class="sql-editor-container">
             <div class="sql-editor-input" ref="editorRef"></div>
@@ -43,7 +40,7 @@ const SqlEditor = {
                                     <template #header>
                                         <div style="line-height:1.3;">
                                             <div style="font-weight:600;">{{ col }}</div>
-                                            <div style="font-size:11px;color:#909399;font-weight:400;">{{ result.columnTypes?.[i] }}</div>
+                                            <div style="font-size:11px;color:var(--el-text-color-secondary);font-weight:400;">{{ result.columnTypes?.[i] }}</div>
                                         </div>
                                     </template>
                                     <template #default="{ row }">{{ formatValue(row[col]) }}</template>
@@ -61,10 +58,10 @@ const SqlEditor = {
             <!-- 执行历史 -->
             <el-collapse v-if="history.length > 0" style="margin-top:12px;">
                 <el-collapse-item title="执行历史" name="history">
-                    <div v-for="(h, i) in history" :key="i" style="padding:6px 0;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;gap:8px;">
+                    <div v-for="(h, i) in history" :key="i" style="padding:6px 0;border-bottom:1px solid var(--el-border-color-lighter);display:flex;align-items:center;gap:8px;">
                         <el-tag :type="h.success ? 'success' : 'danger'" size="small">{{ h.success ? '成功' : '失败' }}</el-tag>
-                        <span style="font-size:12px;color:#909399;">{{ h.time }}</span>
-                        <code style="flex:1;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ h.sql }}</code>
+                        <span style="font-size:12px;color:var(--el-text-color-secondary);">{{ h.time }}</span>
+                        <el-text class="history-sql" truncated>{{ h.sql }}</el-text>
                         <el-button size="small" text @click="loadSql(h.sql)">载入</el-button>
                     </div>
                 </el-collapse-item>

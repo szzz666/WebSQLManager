@@ -7,7 +7,7 @@ const ConnectionManager = {
     template: `
     <div class="connection-manager">
         <div class="toolbar">
-            <h2 style="margin:0;font-size:20px;color:#303133;">数据库连接管理</h2>
+            <h2 style="margin:0;font-size:20px;color:var(--el-text-color-primary);">数据库连接管理</h2>
             <div class="spacer"></div>
             <el-button type="primary" :icon="Plus" @click="openCreate">新建连接</el-button>
         </div>
@@ -37,13 +37,13 @@ const ConnectionManager = {
                                         <el-dropdown-item command="test" :icon="Connection">测试连接</el-dropdown-item>
                                         <el-dropdown-item command="edit" :icon="Edit">编辑</el-dropdown-item>
                                         <el-dropdown-item command="disconnect" :icon="SwitchButton" divided>断开</el-dropdown-item>
-                                        <el-dropdown-item command="delete" :icon="Delete" style="color:#f56c6c;">删除</el-dropdown-item>
+                                        <el-dropdown-item command="delete" :icon="Delete" style="color:var(--el-color-danger);">删除</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
                         </div>
                     </template>
-                    <div style="font-size:13px;color:#606266;line-height:1.8;">
+                    <div style="font-size:13px;color:var(--el-text-color-regular);line-height:1.8;">
                         <div><el-icon><Coin/></el-icon> 类型: <el-tag size="small" :type="typeTag(conn.type)">{{ conn.type?.toUpperCase() }}</el-tag></div>
                         <div style="word-break:break-all;"><el-icon><Link/></el-icon> {{ conn.jdbcUrl }}</div>
                         <div v-if="conn.username"><el-icon><User/></el-icon> {{ conn.username }}</div>
@@ -125,9 +125,9 @@ const ConnectionManager = {
             return map[type] || 'Files';
         };
         const typeColor = (type) => {
-            const map = { sqlite: '#67c23a', mysql: '#409eff', mariadb: '#409eff',
-                postgresql: '#67c23a', mssql: '#e6a23c', oracle: '#f56c6c', h2: '#909399' };
-            return map[type] || '#909399';
+            const map = { sqlite: 'var(--el-color-success)', mysql: 'var(--el-color-primary)', mariadb: 'var(--el-color-primary)',
+                postgresql: 'var(--el-color-success)', mssql: 'var(--el-color-warning)', oracle: 'var(--el-color-danger)', h2: 'var(--el-color-info)' };
+            return map[type] || 'var(--el-color-info)';
         };
         const typeTag = (type) => {
             const map = { sqlite: 'success', mysql: 'primary', mariadb: 'primary',
